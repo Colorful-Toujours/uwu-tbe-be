@@ -27,6 +27,7 @@ import { JwtAuthGuard } from './auth/guards/jwt-auth.guard';
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
         synchronize: true,
+        ssl: true,
       }),
     }),
 
