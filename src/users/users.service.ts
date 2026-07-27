@@ -6,6 +6,7 @@ import {
 import { InjectRepository } from '@nestjs/typeorm';
 import * as bcrypt from 'bcrypt';
 import { Repository } from 'typeorm';
+import { RoleService } from '../role/role.service';
 import { CreateUserDto } from './dto/create-user.dto';
 import { UpdateUserDto } from './dto/update-user.dto';
 import { User } from './entities/user.entity';
@@ -15,6 +16,7 @@ export class UsersService {
   constructor(
     @InjectRepository(User)
     private readonly usersRepository: Repository<User>,
+    private readonly roleService: RoleService,
   ) {}
 
   async create(createUserDto: CreateUserDto): Promise<User> {
@@ -31,6 +33,7 @@ export class UsersService {
     });
 
     const saved = await this.usersRepository.save(user);
+    await this.roleService.assignDefaultRoleToUser(saved.id);
     return this.findOne(saved.id);
   }
 

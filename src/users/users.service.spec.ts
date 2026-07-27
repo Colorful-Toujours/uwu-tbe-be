@@ -1,5 +1,6 @@
 import { Test, TestingModule } from '@nestjs/testing';
 import { getRepositoryToken } from '@nestjs/typeorm';
+import { RoleService } from '../role/role.service';
 import { UsersService } from './users.service';
 import { User } from './entities/user.entity';
 
@@ -19,6 +20,12 @@ describe('UsersService', () => {
             findOne: jest.fn(),
             remove: jest.fn(),
             createQueryBuilder: jest.fn(),
+          },
+        },
+        {
+          provide: RoleService,
+          useValue: {
+            assignDefaultRoleToUser: jest.fn(),
           },
         },
       ],

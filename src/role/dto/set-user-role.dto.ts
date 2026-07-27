@@ -1,7 +1,7 @@
 import { ArrayUnique, IsArray, IsInt } from 'class-validator';
 import { Type } from 'class-transformer';
 
-export class SetUserPermissionDto {
+export class SetUserRoleDto {
   @Type(() => Number)
   @IsInt()
   userId: number;
@@ -10,5 +10,5 @@ export class SetUserPermissionDto {
   @ArrayUnique()
   @Type(() => Number)
   @IsInt({ each: true })
-  permissionIds: number[];
+  roleIds: number[];
 }

@@ -6,7 +6,7 @@ import {
   ManyToMany,
   PrimaryGeneratedColumn,
 } from 'typeorm';
-import { Permission } from '../../permission/entities/permission.entity';
+import { Role } from '../../role/entities/role.entity';
 
 @Entity('users')
 export class User {
@@ -22,12 +22,9 @@ export class User {
   @Column({ select: false })
   passwordHash: string;
 
-  @Column({ default: 'user' })
-  role: string;
-
-  @ManyToMany(() => Permission, (permission) => permission.users)
-  @JoinTable({ name: 'user_permissions' })
-  permissions: Permission[];
+  @ManyToMany(() => Role, (role) => role.users)
+  @JoinTable({ name: 'user_roles' })
+  roles: Role[];
 
   @CreateDateColumn()
   createdAt: Date;

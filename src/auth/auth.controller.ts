@@ -1,15 +1,18 @@
-import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
+import { Body, Controller, Get, Post } from '@nestjs/common';
 import { AuthService } from './auth.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { Public } from './decorators/public.decorator';
 import { CurrentUser } from './decorators/current-user.decorator';
-import { JwtAuthGuard } from './guards/jwt-auth.guard';
+import { RoleService } from '../role/role.service';
 import { User } from '../users/entities/user.entity';
 
 @Controller('auth')
 export class AuthController {
-  constructor(private readonly authService: AuthService) {}
+  constructor(
+    private readonly authService: AuthService,
+    private readonly roleService: RoleService,
+  ) {}
 
   @Public()
   @Post('register')
@@ -23,9 +26,18 @@ export class AuthController {
     return this.authService.login(loginDto);
   }
 
-  @UseGuards(JwtAuthGuard)
   @Get('me')
-  me(@CurrentUser() user: User) {
-    return user;
+  async me(@CurrentUser() user: User) {
+    const roles = await this.roleService.getUserRoleCodes(user.id);
+    const permissions = await this.roleService.getUserPermissionCodes(user.id);
+
+    return {
+      id: user.id,
+      name: user.name,
+      email: user.email,
+      roles,
+      permissions,
+      createdAt: user.createdAt,
+    };
   }
 }

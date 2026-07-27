@@ -2,7 +2,7 @@ import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
 import { UsersService } from '../users/users.service';
-import { User } from '../users/entities/user.entity';
+import { RoleService } from '../role/role.service';
 import { RegisterDto } from './dto/register.dto';
 import { LoginDto } from './dto/login.dto';
 import { JwtPayload } from './strategies/jwt.strategy';
@@ -11,12 +11,14 @@ import { JwtPayload } from './strategies/jwt.strategy';
 export class AuthService {
   constructor(
     private readonly usersService: UsersService,
+    private readonly roleService: RoleService,
     private readonly jwtService: JwtService,
   ) {}
 
   async register(registerDto: RegisterDto) {
     const user = await this.usersService.create(registerDto);
-    return this.buildAuthResponse(user);
+    await this.roleService.assignDefaultRoleToUser(user.id);
+    return this.buildAuthResponse(user.id);
   }
 
   async login(loginDto: LoginDto) {
@@ -35,14 +37,18 @@ export class AuthService {
       throw new UnauthorizedException('Invalid email or password');
     }
 
-    return this.buildAuthResponse(user);
+    return this.buildAuthResponse(user.id);
   }
 
-  private buildAuthResponse(user: User) {
+  async buildAuthResponse(userId: number) {
+    const user = await this.usersService.findOne(userId);
+    const roles = await this.roleService.getUserRoleCodes(userId);
+    const permissions = await this.roleService.getUserPermissionCodes(userId);
+
     const payload: JwtPayload = {
       sub: user.id,
       email: user.email,
-      role: user.role,
+      roles,
     };
 
     return {
@@ -51,7 +57,8 @@ export class AuthService {
         id: user.id,
         name: user.name,
         email: user.email,
-        role: user.role,
+        roles,
+        permissions,
         createdAt: user.createdAt,
       },
     };
