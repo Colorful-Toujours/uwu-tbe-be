@@ -2,6 +2,7 @@ import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/commo
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { Permissions } from '../auth/decorators/permissions.decorator';
@@ -32,6 +33,7 @@ export class UsersController {
 
   @Permissions(PERMISSION_CODES.USER_READ)
   @ApiOperation({ summary: '用户详情' })
+  @ApiParam({ name: 'id', example: 1, description: '用户 id' })
   @Get(':id')
   findOne(@Param('id') id: string) {
     return this.usersService.findOne(+id);
@@ -39,6 +41,7 @@ export class UsersController {
 
   @Permissions(PERMISSION_CODES.USER_UPDATE)
   @ApiOperation({ summary: '更新用户' })
+  @ApiParam({ name: 'id', example: 1, description: '用户 id' })
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.usersService.update(+id, updateUserDto);
@@ -46,6 +49,7 @@ export class UsersController {
 
   @Permissions(PERMISSION_CODES.USER_DELETE)
   @ApiOperation({ summary: '删除用户' })
+  @ApiParam({ name: 'id', example: 1, description: '用户 id' })
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.usersService.remove(+id);

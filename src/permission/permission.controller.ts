@@ -11,6 +11,7 @@ import {
 import {
   ApiBearerAuth,
   ApiOperation,
+  ApiParam,
   ApiTags,
 } from '@nestjs/swagger';
 import { Permissions } from '../auth/decorators/permissions.decorator';
@@ -41,6 +42,7 @@ export class PermissionController {
 
   @Permissions(PERMISSION_CODES.PERMISSION_MANAGE)
   @ApiOperation({ summary: '权限详情' })
+  @ApiParam({ name: 'id', example: 1, description: '权限 id' })
   @Get(':id')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.permissionService.findOne(id);
@@ -48,6 +50,7 @@ export class PermissionController {
 
   @Permissions(PERMISSION_CODES.PERMISSION_MANAGE)
   @ApiOperation({ summary: '更新权限' })
+  @ApiParam({ name: 'id', example: 1, description: '权限 id' })
   @Patch(':id')
   update(
     @Param('id', ParseIntPipe) id: number,
@@ -58,6 +61,7 @@ export class PermissionController {
 
   @Permissions(PERMISSION_CODES.PERMISSION_MANAGE)
   @ApiOperation({ summary: '删除权限' })
+  @ApiParam({ name: 'id', example: 1, description: '权限 id' })
   @Delete(':id')
   remove(@Param('id', ParseIntPipe) id: number) {
     return this.permissionService.remove(id);
