@@ -29,8 +29,22 @@ import { RoleModule } from './role/role.module';
         password: configService.get<string>('DB_PASSWORD'),
         database: configService.get<string>('DB_DATABASE'),
         autoLoadEntities: true,
-        synchronize: true,
-        ssl: true,
+        // Do not let production schema changes happen implicitly. Set this to
+        // true only for the first boot of an empty database, or use migrations.
+        synchronize:
+          configService.get<string>('DB_SYNCHRONIZE', 'false') === 'true',
+        // The PostgreSQL container does not use TLS. Hosted databases can opt
+        // in with DB_SSL=true.
+        ssl:
+          configService.get<string>('DB_SSL', 'false') === 'true'
+            ? {
+                rejectUnauthorized:
+                  configService.get<string>(
+                    'DB_SSL_REJECT_UNAUTHORIZED',
+                    'true',
+                  ) === 'true',
+              }
+            : false,
       }),
     }),
 
